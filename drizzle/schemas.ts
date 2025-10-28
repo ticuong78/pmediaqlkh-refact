@@ -18,7 +18,7 @@ export const CustomerStatus = pgEnum("customer_status", [
 // End of Enum
 
 export const User = pgTable("user", {
-  code: text("code").primaryKey(),
+  code: text("code").primaryKey(), // chỗ này đang cân nhắc thay đổi (các thay đổi cần cân nhắc: 1. loại bỏ id và thay code thành khóa chính, bị phụ thuộc vào code của Customer, 2. giữ nguyên id và trả database về nguyên trạng ban đầu)
   email: text("email").unique().notNull(), // thông tin cho khách hàng và thông tin đăng nhập cho tài khoản
   password: text("password").notNull(), // thông tin cho khách hàng
   displayName: text("display_name").notNull(), // tên hiển thị khi đăng nhập vào web
