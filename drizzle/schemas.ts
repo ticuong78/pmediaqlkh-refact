@@ -1,4 +1,11 @@
-import { integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  integer,
+  pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 // Starts of Enum
 export const Gender = pgEnum("gender", ["MALE", "FEMAILE", "OTHER"]);
@@ -18,20 +25,21 @@ export const CustomerStatus = pgEnum("customer_status", [
 // End of Enum
 
 export const User = pgTable("user", {
-  code: text("code").primaryKey(), // chỗ này đang cân nhắc thay đổi (các thay đổi cần cân nhắc: 1. loại bỏ id và thay code thành khóa chính, bị phụ thuộc vào code của Customer, 2. giữ nguyên id và trả database về nguyên trạng ban đầu)
+  id: serial("id").primaryKey(),
   email: text("email").unique().notNull(), // thông tin cho khách hàng và thông tin đăng nhập cho tài khoản
   password: text("password").notNull(), // thông tin cho khách hàng
   displayName: text("display_name").notNull(), // tên hiển thị khi đăng nhập vào web
   role: UserRole("role").notNull().default("USER"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow(),
-  customerCode: integer("customer_code").references(() => Customer.code),
+  customerId: integer("customer_id").references(() => Customer.id),
 });
 
 // khách hàng có thể là doanh nghiệp hoặc cá nhân
 // Lưu ý: với doanh nghiệp, phải có thông tin của người đại diện doanh nghiệp
 export const Customer = pgTable("customer", {
-  code: text("code").primaryKey(), // để nhận biết thông qua khác hàng này với khách hàng kia
+  id: serial("id").primaryKey(), // để nhận biết thông qua nội bộ hoặc hệ thống
+  code: text("code").unique().notNull(), // để nhận biết thông qua khác hàng này với khách hàng kia
   name: text("name").unique().notNull(), // tên thật khách hàng
   type: CustomerType("type").default("INDIVIDUAL").notNull(),
   level: CustomerLevel("level").default("NORMAL").notNull(),
